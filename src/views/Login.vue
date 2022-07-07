@@ -17,7 +17,7 @@
                 </el-form-item>
                 <!-- 按钮 -->
                 <div class="btn">
-                    <el-button type="primary" @click="onlogin" >登录</el-button>
+                    <el-button type="primary" @click="onlogin">登录</el-button>
                     <el-button type="primary" @click="resetlogin">重置</el-button>
                 </div>
             </el-form>
@@ -28,8 +28,9 @@
 
 <script setup>
 import { defineComponent, reactive, toRefs, ref } from 'vue'
-import axios from 'axios'
 import router from '@/router'
+//拦截器的接口api
+import { apiGetUserInfo } from '@/apis/user.ts'
 const form = reactive({
     name: 'admin',
     password: '123456',
@@ -55,21 +56,30 @@ function onlogin() {
     formOb.value.validate(valid => {
         //如果为true,则代表通过验证
         if (valid) {
-            axios.post('https://lianghj.top:8888/api/private/v1/login', {
-                username: form.name,        // 参数 firstName
-                password: form.password    // 参数 lastName
-            })
-                .then(function (response) {
-                    // alert('登陆成功')
+            // axios.post('https://lianghj.top:8888/api/private/v1/login', {
+            //     username: form.name,        // 参数 firstName
+            //     password: form.password    // 参数 lastName
+            // })
+            //     .then(function (response) {
+            //         // alert('登陆成功')
+            //         //把token保存到window.sessionSorage,代表此用户现在是登陆状态
+            //         window.sessionStorage.setItem('token',response.data.data.token)
+            //         //利用route.push('')改变路由地址，进行跳转
+            //         router.push('/home')
+            //         console.log(response);
+            //     })
+            //     .catch(function (error) {
+            //         alert("登陆失败,请重新登录")
+            //     });
+            apiGetUserInfo(form.name,form.password).then((response) => {
+                
+                // alert('登陆成功')
+                // console.log(response);
                     //把token保存到window.sessionSorage,代表此用户现在是登陆状态
-                    window.sessionStorage.setItem('token',response.data.data.token)
+                    window.sessionStorage.setItem('token',response.data.token)
                     //利用route.push('')改变路由地址，进行跳转
                     router.push('/home')
-                    console.log(response);
-                })
-                .catch(function (error) {
-                    alert("登陆失败,请重新登录")
-                });
+            })
         }
 
         if (!valid) {
