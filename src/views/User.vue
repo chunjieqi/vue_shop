@@ -49,7 +49,7 @@
                         <el-tooltip class="box-item" effect="dark" content="分配角色" enterable="false"
                             placement="top-start">
                             <!-- 分配角色 -->
-                            <el-button type="primary" icon="Share" size="small" />
+                            <el-button @click="setrole(scope.row)" type="primary" icon="Share" size="small" />
                         </el-tooltip>
 
                         <!-- 删除 -->
@@ -110,12 +110,29 @@
                 </span>
             </template>
         </el-dialog>
+        <!-- 分配角色对话框 -->
+        <el-dialog v-model="dialogVisiblefenpei" title="分配角色" width="50%">
+            <p>当前的用户：{{ userinforole.username }}</p>
+            <p>当前的角色：{{ userinforole.role_name }}</p>
+            <p>分配角色：
+                <!-- 下拉选择框 -->
+                <el-select v-model="selectedRoleid" placeholder="Select">
+                    <el-option v-for="item in allrolwlist" :key="item.id" :label="item.roleName" :value="item.id" />
+                </el-select>
+            </p>
+            <template #footer>
+                <span class="dialog-footer">
+                    <el-button @click="dialogVisiblefenpei = false">取消</el-button>
+                    <el-button type="primary" @click="setroleright">确定</el-button>
+                </span>
+            </template>
+        </el-dialog>
     </div>
 </template>
 
 <script setup>
 import { defineComponent, reactive, toRefs, ref, onMounted } from 'vue'
-import { apiGetUserlistdata, apiDeleteuser, apiEdituserInfo, apiAdduserInfo, apiGetbianji } from '@/apis/userdatalist'
+import { apifenpeirolus, apiGetroluslist, apiGetUserlistdata, apiDeleteuser, apiEdituserInfo, apiAdduserInfo, apiGetbianji } from '@/apis/userdatalist'
 import { apiPutUserState } from '@/apis/putchangestat'
 import { ElMessage, ElMessageBox } from 'element-plus'
 //获取用户列表数据
@@ -124,11 +141,11 @@ const params = reactive({
     pagenum: 1,
     pagesize: 2,
 })
-   //储存用户列表
+//储存用户列表
 let userslist = ref([])
-   //储存数据总数
+//储存数据总数
 let listtotal = ref(0)
-   //当前页码
+//当前页码
 let nowpagenum = ref(0)
 function getlist() {
     apiGetUserlistdata(params).then((res) => {
@@ -141,17 +158,17 @@ function getlist() {
     })
 }
 getlist()
-    //监听 页码size改变
+//监听 页码size改变
 function handleSizeChange(newSize) {
     params.pagesize = newSize
     getlist()
 }
-      //监听页码发生改变
+//监听页码发生改变
 function handleCurrentChange(newhandle) {
     params.pagenum = newhandle
     getlist()
 }
-    //修改状态调用此函数
+//修改状态调用此函数
 function changesta(val) {
     console.log(val.id, val.mg_state);
     apiPutUserState(val.id, val.mg_state).then((res) => {
@@ -172,15 +189,15 @@ function changesta(val) {
     })
 
 }
-    //搜索
+//搜索
 function search() {
     getlist()
 }
-   //清空时返回全部数据
+//清空时返回全部数据
 function reclear() {
     getlist()
 }
-   //储存对话框是否显示
+//储存对话框是否显示
 let dialogVisible = ref(false)
 function adduse() {
     dialogVisible.value = true
@@ -286,13 +303,13 @@ let bianjiform = reactive({
     email: '',
     id: ''
 })
-     // 关闭时重置
+// 关闭时重置
 const editforms = ref(null)
 function editclose() {
     // console.log(editforms.value);
     editforms.value.resetFields()
 }
-     //编辑：请求用户信息
+//编辑：请求用户信息
 function bianji(id) {
     // console.log(id);
     apiGetbianji(id).then(res => {
@@ -312,7 +329,7 @@ function bianji(id) {
 
 }
 
-      //编辑表单提交前的预验证
+//编辑表单提交前的预验证
 function rightEditform() {
     editforms.value.validate((valid) => {
         if (valid) {
@@ -347,7 +364,7 @@ function rightEditform() {
 }
 //编辑部份已完成
 //删除部分
-     //1.删除弹出消息提示框
+//1.删除弹出消息提示框
 const opendelete = (id) => {
     ElMessageBox.confirm(
         '操作将永久删除此用户，是否继续操作',
@@ -381,7 +398,68 @@ const opendelete = (id) => {
         })
 }
 //删除部分已完成
+//展示分配角色的对话框
+let dialogVisiblefenpei = ref(false)
+let userinforole = reactive({
+    username: '',
+    role_name: ''
+})
+//角色id
+let roleId = ref(0)
+//所有角色的数据列表
+let allrolwlist = ref([])
+let selectedRoleid = ref('')
+function setrole(val) {
+    selectedRoleid.value = ''
+    roleId.value = val.id
+    userinforole.username = val.username
+    userinforole.role_name = val.role_name
+    dialogVisiblefenpei.value = true
+    //在展示所有对话框之前，获取所有角色的列表
+    apiGetroluslist().then(res => {
+        console.log(res);
+        allrolwlist.value = res.data
 
+
+    }).catch(err => {
+        ElMessage({
+            type: 'error',
+            message: '网络异常，请稍后再试'
+        })
+    })
+
+}
+//分配角色确定按钮
+function setroleright() {
+    if (selectedRoleid.value === '') {
+        ElMessage({
+            message: '请选择要分配的角色',
+            duration: 1000,
+            type: 'error',
+        })
+    }
+    else {
+        apifenpeirolus(roleId.value, selectedRoleid.value).then(res => {
+            console.log(res);
+
+            if (res.meta.status === 200) {
+                ElMessage({
+                    message: '分配成功',
+                    duration: 1000,
+                    type: 'success',
+                })
+                dialogVisiblefenpei.value = false
+                getlist()
+            }
+        }).catch(err => {
+            ElMessage({
+                type: 'error',
+                message: '网络异常，请稍后再试'
+            })
+        })
+    }
+}
+//分配角色完
 </script>
 
 

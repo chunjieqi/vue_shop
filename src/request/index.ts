@@ -4,10 +4,6 @@ import axios from "axios";
 const service = axios.create({
   baseURL: "https://lianghj.top:8888/api/private/v1/", // 所有的请求地址前缀部分
   timeout: 60000, // 请求超时时间毫秒
-  headers: {
-		// 设置后端需要的传参类型
-		'Content-Type': 'application/json',
-	},
 });
 
 // 添加请求拦截器
@@ -17,8 +13,7 @@ service.interceptors.request.use(
     if (config && config.headers) {
       config.headers["Authorization"] =
         "" + window.sessionStorage.getItem("token");
-        // console.log(config);
-        
+      // console.log(config);
     }
     // 在发送请求之前做些什么
     return config;
@@ -33,7 +28,6 @@ service.interceptors.request.use(
 // 添加响应拦截器
 service.interceptors.response.use(
   function (response) {
-    
     // 2xx 范围内的状态码都会触发该函数。
     // 对响应数据做点什么
     // dataAxios 是 axios 返回数据中的 data

@@ -45,3 +45,20 @@ export function apiDeleteuser(id: number) {
     method: "delete",
   });
 }
+
+export function apiGetroluslist() {
+  return httpRequest({
+    url: "roles",
+    method: "get",
+  });
+}
+
+export function apifenpeirolus(id:number,rid:any) {
+  return httpRequest({
+    url: `users/${id}/role`,
+    method: "put",
+    data:{
+      rid:rid
+    }
+  });
+}

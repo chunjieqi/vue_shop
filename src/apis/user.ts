@@ -14,4 +14,3 @@ export function apiGetUserInfo(username:string,password:string) {
 	})
 }
 
-
