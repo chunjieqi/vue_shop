@@ -6,6 +6,10 @@ import User from "@/views/User.vue";
 import Roles from "@/views/Roles.vue";
 import Rights from "@/views/Rights.vue";
 import Goods from "@/views/Goods.vue";
+import Params from "@/views/Params.vue";
+import Categories from "@/views/Categories.vue";
+import Orders from "@/views/Orders.vue";
+import Reports from "@/views/Reports.vue";
 const routes: Array<RouteRecordRaw> = [
   { path: "/", redirect: "/login" },
   { path: "/login", component: Login },
@@ -17,8 +21,12 @@ const routes: Array<RouteRecordRaw> = [
       { path: "welcome", component: Welcome },
       { path: "users", component: User },
       { path: "roles", component: Roles },
-      { path: "Rights", component: Rights },
-      { path: "Goods", component: Goods },
+      { path: "rights", component: Rights },
+      { path: "goods", component: Goods },
+      { path: "params", component: Params },
+      { path: "categories", component: Categories },
+      { path: "orders", component: Orders },
+      { path: "reports", component: Reports },
     ],
   },
 ];
