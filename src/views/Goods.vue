@@ -1,11 +1,11 @@
 <template>
    <div class="Goods">
-    goods
    </div>
 </template>
 
 <script setup>
-import { defineComponent, reactive, toRefs } from 'vue'
+import { defineComponent, reactive, toRefs ,ref} from 'vue'
+
 </script>
 <style lang='scss' scoped>
 </style>
