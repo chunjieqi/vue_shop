@@ -1,5 +1,7 @@
 import axios from "axios";
-
+//导入进度条插件\js与css
+import Nprogress from 'nprogress'
+import 'nprogress/nprogress.css'
 // 创建一个 axios 实例
 const service = axios.create({
   baseURL: "https://lianghj.top:8888/api/private/v1/", // 所有的请求地址前缀部分
@@ -10,6 +12,8 @@ const service = axios.create({
 service.interceptors.request.use(
   function (config) {
     // config.headers.=window.sessionStorage.getItem('token')
+    // 请求开始时显示进度条
+    Nprogress.start()
     if (config && config.headers) {
       config.headers["Authorization"] =
         "" + window.sessionStorage.getItem("token");
@@ -29,6 +33,8 @@ service.interceptors.request.use(
 service.interceptors.response.use(
   function (response) {
     // 2xx 范围内的状态码都会触发该函数。
+    // 请求开始时解释进度条
+    Nprogress.done()
     // 对响应数据做点什么
     // dataAxios 是 axios 返回数据中的 data
     const dataAxios = response.data;
